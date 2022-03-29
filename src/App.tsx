@@ -1,17 +1,34 @@
-import { useState } from "react";
-import logo from "./logo.svg";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
+import { ROUTES } from "./router/routes";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>prueba de deploy</p>
-        <p>si estás viendo esto quiere decir que funcionó ✅</p>
-      </header>
+      {/* TODO: remove this div */}
+      <Router>
+        <div>
+          <nav>
+            <ul>
+              {ROUTES.map((route, idx) => (
+                <li key={idx}>
+                  <Link to={route.path}>{route.path}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <Routes>
+            {ROUTES.map((route, idx) => (
+              <Route
+                path={route.path}
+                element={<route.component />}
+                key={idx}
+              />
+            ))}
+          </Routes>
+        </div>
+      </Router>
     </div>
   );
 }
