@@ -12,6 +12,12 @@ export function Home(): JSX.Element {
     if (!newFiles) return;
     setFiles(files?.concat(newFiles));
   }
+  function handleRemove(fileIndex: number) {
+    const updatedFiles = files
+      .slice(0, fileIndex)
+      .concat(files.slice(fileIndex + 1));
+    setFiles(updatedFiles);
+  }
   return (
     <div>
       {user.isLoggedIn ? (
@@ -54,6 +60,7 @@ export function Home(): JSX.Element {
                   size={file.size}
                   lastModified={file.lastModified}
                   key={idx}
+                  onRemove={() => handleRemove(idx)}
                 />
               ))}
           </div>
@@ -70,6 +77,7 @@ type FileUploadCardProps = {
   type: string;
   size: number;
   lastModified: number;
+  onRemove?: () => void;
 };
 
 export default function FileUploadCard({
@@ -77,15 +85,27 @@ export default function FileUploadCard({
   type,
   size,
   lastModified,
+  onRemove,
 }: FileUploadCardProps) {
   const lastModifiedDate = new Date(lastModified);
   return (
     <div className="fileListItem">
-      <div>{name}</div>
+      <div style={{ overflow: "hidden" }}>
+        <span style={{ overflow: "hidden" }}>{name}</span>
+      </div>
       <div>{type}</div>
       <div>{`${Math.round(size / 1024)} kB`}</div>
       <div>
         {`${lastModifiedDate.getDate()}/${lastModifiedDate.getMonth()}/${lastModifiedDate.getFullYear()} a las ${lastModifiedDate.getHours()}:${lastModifiedDate.getMinutes()}`}
+      </div>
+      <div>
+        <button
+          onClick={() => {
+            if (onRemove) onRemove();
+          }}
+        >
+          ❌
+        </button>
       </div>
     </div>
   );
