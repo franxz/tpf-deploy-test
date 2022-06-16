@@ -40,3 +40,28 @@
 button {
   font-size: calc(10px + 2vmin);
 }
+
+.chequeRect {
+  fill: #243a73;
+  transition: fill 0.4s ease;
+}
+.chequeRect:hover {
+  fill: #29619c;
+}
+
+.chequeDetail {
+  display: grid;
+  grid-template-columns: 140px 100px;
+  grid-template-rows: auto;
+}
+.chequeDetailTitle {
+  grid-column: span 2;
+}
+
+.interactiveTab {
+  cursor: pointer;
+  transition: color ease 0.25s;
+}
+.interactiveTab:hover {
+  color: lightblue !important;
+}

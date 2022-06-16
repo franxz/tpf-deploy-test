@@ -2,9 +2,11 @@ import React, { useContext, useState } from "react";
 import { UserContext } from "../../App";
 
 const usuariosRegistrados: any = {
-  "franco.martucci": "1234",
-  "jessi.miguel": "1234",
-  "coti.pellegrini": "1234",
+  franco: "1234",
+  jessi: "1234",
+  coti: "1234",
+  fer: "1234",
+  mariano: "1234",
 };
 
 export function Login(): JSX.Element {

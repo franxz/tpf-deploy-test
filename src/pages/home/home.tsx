@@ -1,8 +1,20 @@
 import "../../App.css";
-import { ChangeEvent, DragEventHandler, useContext, useState } from "react";
+import {
+  ChangeEvent,
+  DragEventHandler,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { UserContext } from "../../App";
+import { BottomAxis, LeftAxis } from "../../features/dashboard/Axes";
+import { Chart } from "../../features/dashboard/Chart";
+
+type Tabs = "dashboard" | "archivos";
 
 export function Home(): JSX.Element {
+  const [selectedTab, setSelectedTab] = useState<Tabs>("dashboard");
   const { user } = useContext(UserContext);
   const [files, setFiles] = useState<File[]>([]);
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -18,53 +30,96 @@ export function Home(): JSX.Element {
       .concat(files.slice(fileIndex + 1));
     setFiles(updatedFiles);
   }
+  const tabsStyle = {
+    color: "white",
+    fontWeight: 600,
+    fontSize: 14,
+    marginRight: 16,
+    padding: 4,
+  };
+  const tabSeparator = (
+    <p style={{ ...tabsStyle, paddingRight: 32, paddingLeft: 32 }}>|</p>
+  );
   return (
     <div>
       {user.isLoggedIn ? (
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ height: 32 }} />
-          <div className="fileInputContainer">
-            <input
-              type="file"
-              id="file"
-              multiple
-              onChange={handleChange}
-              className="fileInput"
-            />
-            <div className="fileInputOverlay">
-              <label htmlFor="file" className="fileInputLabelContainer">
-                <span className="fileInputLabelIcon">📄</span>
-                <span className="fileInputLabel">
-                  Click para subir archivos
-                </span>
-                <span className="fileInputLabelSm">
-                  ...o simplemente arraste los archivos a esta zona!
-                </span>
-              </label>
-            </div>
+        <>
+          <div
+            style={{
+              backgroundColor: "black",
+              alignItems: "center",
+              width: "100%",
+              height: 48,
+              marginTop: -18,
+              marginBottom: 16,
+              display: "flex",
+              paddingLeft: 32,
+            }}
+          >
+            <p
+              style={tabsStyle}
+              className="interactiveTab"
+              onClick={() => setSelectedTab("dashboard")}
+            >
+              Dashboard
+            </p>
+            {tabSeparator}
+            <p
+              style={tabsStyle}
+              className="interactiveTab"
+              onClick={() => setSelectedTab("archivos")}
+            >
+              Archivos
+            </p>
           </div>
-          <div className="fileContainer">
-            {!!files.length && <FileUploadCardHeader />}
-            {files &&
-              files.map((file, idx) => (
-                <FileUploadCard
-                  name={file.name}
-                  type={file.type}
-                  size={file.size}
-                  lastModified={file.lastModified}
-                  key={idx}
-                  onRemove={() => handleRemove(idx)}
+          {selectedTab === "dashboard" && <Chart />}
+          {selectedTab === "archivos" && (
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ height: 32 }} />
+              <div className="fileInputContainer">
+                <input
+                  type="file"
+                  id="file"
+                  multiple
+                  onChange={handleChange}
+                  className="fileInput"
                 />
-              ))}
-          </div>
-        </div>
+                <div className="fileInputOverlay">
+                  <label htmlFor="file" className="fileInputLabelContainer">
+                    <span className="fileInputLabelIcon">📄</span>
+                    <span className="fileInputLabel">
+                      Click para subir archivos
+                    </span>
+                    <span className="fileInputLabelSm">
+                      ...o simplemente arraste los archivos a esta zona
+                    </span>
+                  </label>
+                </div>
+              </div>
+              <div className="fileContainer">
+                {!!files.length && <FileUploadCardHeader />}
+                {files &&
+                  files.map((file, idx) => (
+                    <FileUploadCard
+                      name={file.name}
+                      type={file.type}
+                      size={file.size}
+                      lastModified={file.lastModified}
+                      key={idx}
+                      onRemove={() => handleRemove(idx)}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <p>❌ Debes iniciar sesion para ver esta seccion</p>
       )}
