@@ -10,10 +10,12 @@ import {
 import { UserContext } from "../../App";
 import { BottomAxis, LeftAxis } from "../../features/dashboard/Axes";
 import { Chart } from "../../features/dashboard/Chart";
+import { getCheques, uploadFile } from "../../services/services";
 
 type Tabs = "dashboard" | "archivos";
 
 export function Home(): JSX.Element {
+  const [idToClientMap, setIdToClientMap] = useState({});
   const [selectedTab, setSelectedTab] = useState<Tabs>("dashboard");
   const { user } = useContext(UserContext);
   const [files, setFiles] = useState<File[]>([]);
@@ -40,6 +42,31 @@ export function Home(): JSX.Element {
   const tabSeparator = (
     <p style={{ ...tabsStyle, paddingRight: 32, paddingLeft: 32 }}>|</p>
   );
+
+  useEffect(() => {
+    getCheques().then((checks) => {
+      const cheques = checks as any[];
+      console.log(cheques);
+      setIdToClientMap(
+        cheques.reduce<Record<string, any>>((prev, cheque) => {
+          const cliente = prev[cheque.Id_cliente];
+          cliente
+            ? cliente.cheques.push(cheque)
+            : (prev[cheque.Id_cliente] = {
+                id: cheque.Id_cliente,
+                nombre: cheque.descrip_cliente,
+                cheques: [cheque],
+              });
+          return prev;
+        }, {})
+      );
+    });
+  }, []);
+
+  function handleUploadClick() {
+    uploadFile(files[0]);
+  }
+
   return (
     <div>
       {user.isLoggedIn ? (
@@ -72,7 +99,9 @@ export function Home(): JSX.Element {
               Archivos
             </p>
           </div>
-          {selectedTab === "dashboard" && <Chart />}
+          {selectedTab === "dashboard" && (
+            <Chart idToClientMap={idToClientMap} />
+          )}
           {selectedTab === "archivos" && (
             <div
               style={{
@@ -116,6 +145,9 @@ export function Home(): JSX.Element {
                       onRemove={() => handleRemove(idx)}
                     />
                   ))}
+                {!!files.length && (
+                  <button onClick={handleUploadClick}>UPLOAD FILE</button>
+                )}
               </div>
             </div>
           )}

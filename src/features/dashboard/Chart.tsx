@@ -53,21 +53,28 @@ function addDays(date: Date, days: number) {
   return newDate;
 }
 
-export function Chart() {
+export function Chart({ idToClientMap }) {
+  const clientIds = Object.keys(idToClientMap);
+
   const [mouseLine, setMouseLine] = useState(null);
   const [selectedCheque, setSelectedCheque] = useState(null);
 
   const [selectedClient, setSelectedClient] = useState(
     data.clients.find((client) => client.id === 0)
   );
-  const dates = selectedClient.cheques.map((cheque) => new Date(cheque.fecha));
-  const datesSum = selectedClient.cheques.map((cheque) =>
+  const dates = selectedClient.cheques
+    .map((cheque) => new Date(cheque.fecha))
+    .concat(selectedClient.cheques.map((cheque) => new Date(cheque.fecha_vto)));
+  /* const datesSum = selectedClient.cheques.map((cheque) =>
     addDays(new Date(cheque.fecha), cheque.deltaDias)
-  );
+  ); */
+
   const cheques = selectedClient.cheques.map((cheque, idx) => ({
     ...cheque,
     start: new Date(cheque.fecha),
-    finish: addDays(new Date(cheque.fecha), cheque.deltaDias),
+    finish: new Date(cheque.fecha_vto),
+    monto: cheque.importe,
+    /* finish: addDays(new Date(cheque.fecha), cheque.deltaDias), */
   }));
 
   const chequeH = 25;
@@ -78,7 +85,8 @@ export function Chart() {
   };
   const margin = 48;
 
-  const xDomain = d3.extent(dates.concat(datesSum));
+  /* const xDomain = d3.extent(dates.concat(datesSum)); */
+  const xDomain = d3.extent(dates);
   const xRange = [0, dms.width];
   const xScale = d3.scaleTime().domain(xDomain).range(xRange);
 
@@ -97,14 +105,12 @@ export function Chart() {
           name="clients"
           id="clients"
           onChange={(e) => {
-            setSelectedClient(
-              data.clients.find((client) => `${client.id}` === e.target.value)
-            );
+            setSelectedClient(idToClientMap[e.target.value]);
             setSelectedCheque(null);
           }}
         >
-          {data.clients.map((client) => (
-            <option value={client.id}>{client.name}</option>
+          {clientIds.map((clientId) => (
+            <option value={clientId}>{idToClientMap[clientId].nombre}</option>
           ))}
         </select>
       </div>
@@ -165,7 +171,12 @@ export function Chart() {
                 style={
                   selectedCheque && selectedCheque.id === cheque.id
                     ? { fill: "#0074d9" }
-                    : {}
+                    : {
+                        fill:
+                          cheque.estado_cheque === "ENTREGADO"
+                            ? "#CC704B"
+                            : "#92BA92",
+                      }
                 }
                 {...{
                   width: xScale(cheque.finish) - xScale(cheque.start),
@@ -191,7 +202,7 @@ export function Chart() {
                 fill="white"
                 pointerEvents="none"
               >
-                ${(cheque.monto * 1000).toLocaleString()}
+                ${(cheque.monto * 1).toLocaleString()}
               </text>
             </g>
           ))}
