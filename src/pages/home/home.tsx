@@ -10,13 +10,20 @@ import {
 import { UserContext } from "../../App";
 import { BottomAxis, LeftAxis } from "../../features/dashboard/Axes";
 import { Chart } from "../../features/dashboard/Chart";
-import { getCheques, uploadFile } from "../../services/services";
+import {
+  getCCdias,
+  getCheques,
+  uploadFile,
+  uploadFileCC,
+} from "../../services/services";
 
 type Tabs = "dashboard" | "archivos";
 
 export function Home(): JSX.Element {
   const [idToClientMap, setIdToClientMap] = useState({});
+  const [filteredCC, setFilteredCC] = useState<any[]>([]);
   const [selectedTab, setSelectedTab] = useState<Tabs>("dashboard");
+  const [radioValue, setRadioValue] = useState("check");
   const { user } = useContext(UserContext);
   const [files, setFiles] = useState<File[]>([]);
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -44,6 +51,11 @@ export function Home(): JSX.Element {
   );
 
   useEffect(() => {
+    getCCdias().then((clients) => {
+      const clientes = clients as any[];
+      clientes.sort((a, b) => b.DiasPago - a.DiasPago);
+      setFilteredCC(clientes.filter((cliente) => cliente.DiasPago));
+    });
     getCheques().then((checks) => {
       const cheques = checks as any[];
       console.log(cheques);
@@ -64,7 +76,11 @@ export function Home(): JSX.Element {
   }, []);
 
   function handleUploadClick() {
-    uploadFile(files[0]);
+    if (radioValue === "cc") {
+      uploadFileCC(files[0]);
+    } else {
+      uploadFile(files[0]);
+    }
   }
 
   return (
@@ -100,7 +116,7 @@ export function Home(): JSX.Element {
             </p>
           </div>
           {selectedTab === "dashboard" && (
-            <Chart idToClientMap={idToClientMap} />
+            <Chart idToClientMap={idToClientMap} filteredCC={filteredCC} />
           )}
           {selectedTab === "archivos" && (
             <div
@@ -111,6 +127,31 @@ export function Home(): JSX.Element {
                 alignItems: "center",
               }}
             >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+                onChange={(e) => setRadioValue(e.target.value)}
+              >
+                <b>Tipo de archivo:</b>
+                <div style={{ height: 8 }} />
+                <div>
+                  <input
+                    type="radio"
+                    id="check"
+                    name="archivos"
+                    value="check"
+                  />
+                  <label for="check">Cheques</label>
+                </div>
+                <div>
+                  <input type="radio" id="cc" name="archivos" value="cc" />
+                  <label for="cc">Cuentas Corrientes</label>
+                </div>
+              </div>
+
               <div style={{ height: 32 }} />
               <div className="fileInputContainer">
                 <input
@@ -146,7 +187,20 @@ export function Home(): JSX.Element {
                     />
                   ))}
                 {!!files.length && (
-                  <button onClick={handleUploadClick}>UPLOAD FILE</button>
+                  <button
+                    onClick={handleUploadClick}
+                    style={{
+                      marginTop: 16,
+                      marginBottom: 32,
+                      padding: 8,
+                      borderRadius: 6,
+                      backgroundColor: "#0074d9",
+                      color: "white",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Subir Archivo
+                  </button>
                 )}
               </div>
             </div>
@@ -180,7 +234,7 @@ export default function FileUploadCard({
       <div style={{ overflow: "hidden" }}>
         <span style={{ overflow: "hidden" }}>{name}</span>
       </div>
-      <div>{type}</div>
+      <div>{type.length > 20 ? `${type.slice(0, 20)}...` : type}</div>
       <div>{`${Math.round(size / 1024)} kB`}</div>
       <div>
         {`${lastModifiedDate.getDate()}/${lastModifiedDate.getMonth()}/${lastModifiedDate.getFullYear()} a las ${lastModifiedDate.getHours()}:${lastModifiedDate.getMinutes()}`}
