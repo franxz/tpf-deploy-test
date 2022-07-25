@@ -1,6 +1,6 @@
 import { BottomAxis, LeftAxis } from "./Axes";
 import * as d3 from "d3";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const data = {
   clients: [
@@ -53,7 +53,7 @@ function addDays(date: Date, days: number) {
   return newDate;
 }
 
-export function Chart({ idToClientMap, filteredCC }) {
+export function Chart({ idToClientMap /* filteredCC */, selectedClientId }) {
   const clientIds = Object.keys(idToClientMap);
 
   if (!clientIds.length) {
@@ -67,18 +67,28 @@ export function Chart({ idToClientMap, filteredCC }) {
   const [selectedCheque, setSelectedCheque] = useState(null);
 
   const [selectedClient, setSelectedClient] = useState(
-    data.clients.find((client) => client.id === 0)
+    null /*  data.clients.find((client) => client.id === 0) */
   );
+
+  useEffect(() => {
+    console.log("ASD", selectedClientId);
+    const client = idToClientMap[selectedClientId];
+    setSelectedClient(client || null);
+    setSelectedCheque(null);
+  }, [selectedClientId]);
+
+  if (!selectedClient) return null;
+
   const dates = selectedClient.cheques
     .map((cheque) => new Date(cheque.fecha))
     .concat(selectedClient.cheques.map((cheque) => new Date(cheque.fecha_vto)));
   /* const datesSum = selectedClient.cheques.map((cheque) =>
     addDays(new Date(cheque.fecha), cheque.deltaDias)
   ); */
-  const datesCC = filteredCC
+  /* const datesCC = filteredCC
     .map((cc) => new Date(cc.fechaInicial))
     .concat(filteredCC.map((cc) => new Date(cc.fechaFinal)));
-  console.log(datesCC);
+  console.log(datesCC); */
 
   const cheques = selectedClient.cheques.map((cheque, idx) => ({
     ...cheque,
@@ -93,7 +103,7 @@ export function Chart({ idToClientMap, filteredCC }) {
   const dms = {
     width: 600,
     height: 16 * 2 + (chequeH + chequeVspacing) * cheques.length,
-    height2: 16 * 2 + (chequeH + chequeVspacing) * filteredCC.length,
+    /* height2: 16 * 2 + (chequeH + chequeVspacing) * filteredCC.length, */
   };
   const margin = 48;
 
@@ -101,10 +111,10 @@ export function Chart({ idToClientMap, filteredCC }) {
   const xDomain = d3.extent(dates);
   const xRange = [0, dms.width];
   const xScale = d3.scaleTime().domain(xDomain).range(xRange);
-  const xScaleCC = d3.scaleTime().domain(d3.extent(datesCC)).range(xRange);
+  /* const xScaleCC = d3.scaleTime().domain(d3.extent(datesCC)).range(xRange); */
 
   const value = mouseLine ? xScale.invert(mouseLine) : new Date();
-  const value2 = mouseLine ? xScaleCC.invert(mouseLine) : new Date();
+  /*   const value2 = mouseLine ? xScaleCC.invert(mouseLine) : new Date(); */
 
   const mouseLineColor = "#FF8C32";
   const fechaLineColor = "#FFD9C0";
@@ -113,7 +123,7 @@ export function Chart({ idToClientMap, filteredCC }) {
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      <div style={{ marginBottom: 8, fontWeight: 600, fontSize: 18 }}>
+      {/* <div style={{ marginBottom: 8, fontWeight: 600, fontSize: 18 }}>
         Cheques
       </div>
       <div>
@@ -130,7 +140,7 @@ export function Chart({ idToClientMap, filteredCC }) {
             <option value={clientId}>{idToClientMap[clientId].nombre}</option>
           ))}
         </select>
-      </div>
+      </div> */}
       <svg width={dms.width + margin * 2} height={dms.height + margin * 2}>
         {/*         <rect
           width={dms.width + margin * 2}
@@ -363,186 +373,6 @@ export function Chart({ idToClientMap, filteredCC }) {
           </div>
         </div>
       )}
-
-      {/* CUENTAS CORRIENTES 
-SS
-SS
-SS
-
-SS
-SS
-SS*/}
-      <div
-        style={{
-          marginTop: 32,
-          marginBottom: 0,
-          fontWeight: 600,
-          fontSize: 18,
-        }}
-      >
-        Cuentas Corrientes (delta dias)
-      </div>
-      <svg width={dms.width + margin * 2} height={dms.height2 + margin * 2}>
-        {/*         <rect
-          width={dms.width + margin * 2}
-          height={dms.height + margin * 2}
-          fill="lightgray"
-        /> */}
-        <g
-          transform={`translate(${margin},${margin})`}
-          onMouseMove={(e) => setMouseLine(d3.pointer(e)[0])}
-          onMouseEnter={() => setShowLineCC(true)}
-          onMouseLeave={() => setShowLineCC(false)}
-        >
-          <rect
-            {...{ width: dms.width, height: dms.height2 }}
-            fill="lavender"
-            opacity={0.5}
-          />
-          {/* FECHA ACTUAL */}
-          <g transform={`translate(${xScaleCC(new Date())},0)`}>
-            <path
-              d={["M", 0, -20, "V", dms.height2].join(" ")}
-              stroke={fechaLineColor}
-              stroke-width="2"
-            />
-            <circle
-              transform={`translate(0,${dms.height2})`}
-              r="4"
-              fill={fechaLineColor}
-            />
-            <rect
-              {...{
-                width: 80,
-                height: 20,
-              }}
-              fill={fechaLineColor}
-              rx="10"
-              ry="10"
-              transform={`translate(-40,-20)`}
-            />
-            <text
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                textAnchor: "middle",
-                transform: "translateY(-6px)",
-              }}
-            >
-              {`${new Date().getDate()}/${
-                new Date().getMonth() + 1
-              }/${new Date().getFullYear()}`}
-            </text>
-          </g>
-          {filteredCC.map((cheque, idx) => (
-            <g
-              transform={`translate(${xScaleCC(
-                new Date(cheque.fechaInicial)
-              )},${16 + idx * 30})`}
-              style={{ cursor: "pointer" }}
-            >
-              <rect
-                className="chequeRect"
-                style={{ fill: "#0074d9" }}
-                {...{
-                  width:
-                    xScaleCC(new Date(cheque.fechaFinal)) -
-                    xScaleCC(new Date(cheque.fechaInicial)),
-                  height: chequeH,
-                }}
-                /*    fill={
-                  selectedCheque && selectedCheque.id === cheque.id
-                    ? "blue"
-                    : "red"
-                } */
-                rx="5"
-                ry="5"
-              />
-              <text
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  textAnchor: "middle",
-                  transform: `translate(${
-                    (xScaleCC(new Date(cheque.fechaFinal)) -
-                      xScaleCC(new Date(cheque.fechaInicial))) /
-                    2
-                  }px, 17px)`,
-                }}
-                fill="white"
-                pointerEvents="none"
-              >
-                {`${cheque.DiasPago} - ${cheque.razon_social}`}
-              </text>
-            </g>
-          ))}
-          {/* {mouseLine && (
-            <g transform={`translate(${mouseLine - margin},${dms.height})`}>
-              <path
-                d={["M", 0, 30, "V", -dms.height].join(" ")}
-                fill="none"
-                stroke="white"
-              />
-              <circle r="8" fill="white" />
-              <text
-                style={{
-                  fontSize: "12px",
-                  textAnchor: "middle",
-                  transform: "translateY(45px)",
-                }}
-              >
-                {`${value.getDate()}/${
-                  value.getMonth() + 1
-                }/${value.getFullYear()}`}
-              </text>
-            </g>
-          )} */}
-
-          {/* EJES */}
-          <g transform={`translate(0,${dms.height2})`}>
-            {/* <LeftAxis {...dms} /> */}
-            <BottomAxis {...dms} domain={d3.extent(datesCC)} />
-          </g>
-
-          {/* FECHA MOUSE */}
-          {mouseLine && showLineCC && (
-            <g transform={`translate(${mouseLine},0)`} pointerEvents="none">
-              <circle
-                transform={`translate(0,${dms.height2})`}
-                r="6"
-                fill={mouseLineColor}
-              />
-              <path
-                d={["M", 0, -20, "V", dms.height2].join(" ")}
-                stroke={mouseLineColor}
-                stroke-width="2"
-              />
-              <rect
-                {...{
-                  width: 80,
-                  height: 20,
-                }}
-                fill={mouseLineColor}
-                rx="10"
-                ry="10"
-                transform={`translate(-40,-20)`}
-              />
-              <text
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  textAnchor: "middle",
-                  transform: "translateY(-6px)",
-                }}
-              >
-                {`${value2.getDate()}/${
-                  value2.getMonth() + 1
-                }/${value2.getFullYear()}`}
-              </text>
-            </g>
-          )}
-        </g>
-      </svg>
     </div>
   );
 }

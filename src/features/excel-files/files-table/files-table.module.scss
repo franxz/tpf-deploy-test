@@ -1,0 +1,41 @@
+.tableGrid {
+  margin-top: 16px; // TODO: sacar de aca
+  display: grid;
+  grid-template-columns: 1fr 16fr 10fr 4fr 8fr 2fr; // select, nombre, modificado, peso, tipo, acciones (borrar)
+  grid-gap: 4px 0px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid #0074d9;
+}
+
+.container {
+  overflow: hidden; // TODO: check if this should be here
+  transition: background 1s;
+}
+
+.header {
+  display: contents;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: white;
+  
+  & * {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: #0074d9;
+    border-right: 1px solid white;
+  }
+}
+
+.row {
+  display: contents;
+  font-size: 12px;
+  
+  & * {
+    padding-top: 6px;
+  }
+
+  &:nth-child(2n) span {
+    background-color: rgb(234, 224, 218);
+  }
+}
