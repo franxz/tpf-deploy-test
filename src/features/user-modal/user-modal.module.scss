@@ -1,0 +1,237 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.content {
+  position: relative;
+  width: 80%;
+  min-height: 500px;
+  padding: 24px;
+  margin: 32px auto 0;
+  background-color: #f3f6fd;
+  border-radius: 5px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  font-size: 20px;
+
+  transition: color 0.3s;
+  &:hover {
+    color: red;
+  }
+}
+
+.title {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+
+  .clientName {
+    color: darkred;
+  }
+}
+
+.sec1 {
+  width: 100%;
+  padding: 8px 0;
+  display: flex;
+  color: white;
+  background-color: #04cd99;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px 0px rgba(158, 158, 158, 0.5);
+
+  p {
+    margin: 0;
+  }
+
+  &Elem {
+    flex-grow: 1;
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  &Title {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  &Content {
+    font-size: 40px;
+    font-weight: 700;
+  }
+}
+
+.sec2 {
+  width: 100%;
+  display: flex;
+  box-shadow: 2px 2px 10px 0px rgba(158, 158, 158, 0.5);
+
+  p {
+    margin: 0;
+  }
+
+  &Left {
+    flex-grow: 1;
+    text-align: center;
+    color: white;
+    background-color: #04cd99;
+    border-radius: 5px 0 0 5px;
+  }
+
+  &Right {
+    flex-grow: 2;
+    padding: 0 6px;
+    border-radius: 0 5px 5px 0;
+    background-color: white;
+
+    &Renglon {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 4px;
+
+      &:first-child {
+        font-weight: 600;
+        border-bottom: 1px solid darkgray;
+      }
+    }
+  }
+
+  &Title {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  &Content {
+    font-size: 50px;
+    font-weight: 800;
+  }
+}
+
+.sec3 {
+  width: 100%;
+  display: flex;
+  box-shadow: 2px 2px 10px 0px rgba(158, 158, 158, 0.5);
+
+  p {
+    margin: 0;
+  }
+
+  &Left {
+    flex-grow: 1;
+    text-align: center;
+    color: white;
+    background-color: #04cd99;
+    border-radius: 0 5px 5px 0;
+  }
+
+  &Right {
+    flex-grow: 2;
+    padding: 0 6px;
+    border-radius: 5px 0 0 5px;
+    background-color: white;
+
+    &Renglon {
+      padding: 0 4px;
+      &:first-child {
+        font-weight: 600;
+        border-bottom: 1px solid darkgray;
+      }
+      &Bold {
+        font-weight: 600;
+      }
+    }
+  }
+
+  &Title {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  &Content {
+    font-size: 50px;
+    font-weight: 800;
+  }
+}
+
+.sec4 {
+  width: 100%;
+  display: flex;
+  box-shadow: 2px 2px 10px 0px rgba(158, 158, 158, 0.5);
+
+  p {
+    margin: 0;
+  }
+
+  textarea {
+    width: calc(100% - 10px);
+    resize: none;
+  }
+
+  &Content {
+    flex-grow: 1;
+    padding: 0 6px;
+    border-radius: 5px;
+    background-color: white;
+  }
+
+  &Title {
+    padding: 0 4px;
+    font-weight: 600;
+    border-bottom: 1px solid darkgray;
+  }
+}
+
+.sec5 {
+  width: 100%;
+  display: flex;
+  box-shadow: 2px 2px 10px 0px rgba(158, 158, 158, 0.5);
+
+  p {
+    margin: 0;
+  }
+
+  textarea {
+    width: calc(100% - 10px);
+    resize: none;
+  }
+
+  &Content {
+    flex-grow: 1;
+    padding: 0 6px;
+    border-radius: 5px;
+    background-color: white;
+  }
+
+  &Title {
+    padding: 0 4px;
+    font-weight: 600;
+    border-bottom: 1px solid darkgray;
+  }
+
+  &Filters {
+    display: flex;
+    padding: 8px 0;
+
+    &Elem {
+      flex-grow: 1;
+      padding: 0 24px;
+    }
+  }
+}
+
+.spacer {
+  height: 20px;
+}

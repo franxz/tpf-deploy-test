@@ -11,6 +11,7 @@ import {
 } from "../../services/services";
 import { Table } from "../../features/dashboard/table";
 import { FileUploader } from "../../features/excel-files/file-uploader/file-uploader";
+import UserModal from "../../features/user-modal/user-modal";
 
 type Tabs = "dashboard" | "archivos";
 
@@ -154,6 +155,7 @@ export function Home(): JSX.Element {
             >
               Dashboard
             </p>
+
             {tabSeparator}
             <p
               style={tabsStyle}
@@ -165,6 +167,7 @@ export function Home(): JSX.Element {
           </div>
           {selectedTab === "dashboard" && (
             <>
+              <UserModal userId="0" />
               <Table data={tableData} handleClientClick={handleClientClick} />
               <Chart
                 idToClientMap={idToClientMap}
